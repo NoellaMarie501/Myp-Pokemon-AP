@@ -1,0 +1,18 @@
+/* Add this CSS to your existing stylesheet or create a new one */
+.search-bar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .search-input {
+    padding: 10px;
+    margin-right: 10px;
+  }
+  
+  .search-button {
+    padding: 10px;
+    cursor: pointer;
+  }
+  

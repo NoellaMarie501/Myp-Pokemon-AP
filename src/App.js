@@ -3,21 +3,18 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PokemonList from './components/PokemonList';
 import PokemonDetail from './components/PokemonDetail';
-import SearchBar from './components/SearchBar';
+import './components/PokemonList.css'
 
 const App = () => {
-  const handleSearch = (searchTerm) => {
-    // Implement search functionality here
-    console.log('Searching for:', searchTerm);
-  };
+  
 
   return (
     <Router>
       <div>
-        <SearchBar />
+        
         <Routes>
           <Route path="/" element={<PokemonList />} />
-          <Route path="/pokemon/:name" element={<PokemonDetail />} />
+          <Route path="/pokemon/:id" element={<PokemonDetail />} />
         </Routes>
       </div>
     </Router>
