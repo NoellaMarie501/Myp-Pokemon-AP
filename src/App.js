@@ -14,10 +14,10 @@ const App = () => {
   return (
     <Router>
       <div>
-        <SearchBar onSearch={handleSearch} />
+        <SearchBar />
         <Routes>
-          <Route path="/" exact component={PokemonList} />
-          <Route path="/pokemon/:name" component={PokemonDetail} />
+          <Route path="/" element={<PokemonList />} />
+          <Route path="/pokemon/:name" element={<PokemonDetail />} />
         </Routes>
       </div>
     </Router>
