@@ -9,48 +9,58 @@ const PokemonList = () => {
   const [loading, setLoading] = useState(true);
   const [url, setUrl] = useState('https://pokeapi.co/api/v2/pokemon/');
   const [nextUrl, setNextUrl] = useState();
-  const [prevUrl, setPrevUrl] = useState();
-  const [pokeDex, setPokeDex] = useState();
   const [filteredPokeData, setFilteredPokeData] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState(null);
+  const [isSearching, setIsSearching] = useState(false);
+
 
   const pokeFun = async () => {
     try {
       setLoading(true);
       const res = await axios.get(url);
       setNextUrl(res.data.next);
-      setPrevUrl(res.data.previous);
       getPokemon(res.data.results);
       setLoading(false);
     } catch (error) {
-      setError('Error fetching Pokemon data. Please check your internet connection and try again.');
+      setError('Error fetching Pokémon data. Please check your internet connection.');
       setLoading(false);
     }
   };
 
   const getPokemon = async (res) => {
-    const promises = res.map(async (item) => {
-      const result = await axios.get(item.url);
-      return result.data;
-    });
+    const promises = res.map((item) => axios.get(item.url).then((res) => res.data));
 
     Promise.all(promises)
       .then((pokemonData) => {
-        setPokeData((prevData) => [...prevData, ...pokemonData]);
+        setPokeData((prevData) => {
+          const newData = pokemonData.filter(
+            (poke) => !prevData.some((prev) => prev.id === poke.id)
+          );
+          return [...prevData, ...newData];
+        });
+
       })
-      .catch((error) => {
-        setError('Error fetching Pokemon details. Please try again.');
+      .catch(() => {
+        setError('Error fetching Pokémon details.');
       });
   };
 
+
   useEffect(() => {
-    if (pokeData.length === 0) {
-      pokeFun();
-    }
-  }, [pokeData]);
+
+    pokeFun();
+
+  }, []);
+
+  const handleReset = () => {
+    // Clear the filtered list
+    setFilteredPokeData([]);
+    setIsSearching(false);
+  };
 
   const handleSearch = (searchTerm) => {
+    setIsSearching(true);
     const filteredPokemon = pokeData.filter((pokemon) =>
       pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -62,11 +72,10 @@ const PokemonList = () => {
       try {
         const res = await axios.get(nextUrl);
         setNextUrl(res.data.next);
-        setPrevUrl(res.data.previous);
         getPokemon(res.data.results);
-      } catch (error) {
-        setError('Error fetching more Pokemon data. Please try again.');
-        setHasMore(false); // Disable infinite scroll on error
+      } catch (err) {
+        setHasMore(false);
+        setError('Error loading more Pokémon.');
       }
     } else {
       setHasMore(false);
@@ -75,27 +84,39 @@ const PokemonList = () => {
 
   return (
     <>
-      <SearchBar onSearch={handleSearch} />
-      {error && <div>Error: {error}</div>}
-      <InfiniteScroll
-        dataLength={pokeData.length}
-        next={fetchMoreData}
-        hasMore={hasMore}
-        loader={<h4>Loading...</h4>}
-        endMessage={<p>No more Pokemon to load!</p>}
-      >
+      <SearchBar onSearch={handleSearch} onReset={handleReset} />
+      {error && <div className="error">{error}</div>}
+      {isSearching ? (
         <div className="container">
           <div className="left-content">
-            <Card
-              pokemon={filteredPokeData.length > 0 ? filteredPokeData : pokeData}
-              loading={loading}
-             
-            />
+            {filteredPokeData.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '1rem' }}>
+                No Pokémon found for that search.
+              </div>
+            ) : (
+              <Card pokemon={filteredPokeData} loading={false} />
+            )}
           </div>
         </div>
-      </InfiniteScroll>
+      ) : (
+        <InfiniteScroll
+          dataLength={pokeData.length}
+          next={fetchMoreData}
+          hasMore={hasMore}
+          loader={<h4 style={{ textAlign: 'center' }}>Loading...</h4>}
+          endMessage={<p style={{ textAlign: 'center' }}>🎉 No more Pokémon to load!</p>}
+        >
+          <div className="container">
+            <div className="left-content">
+              <Card pokemon={pokeData} loading={loading} />
+            </div>
+          </div>
+        </InfiniteScroll>
+      )}
+
     </>
   );
 };
 
 export default PokemonList;
+

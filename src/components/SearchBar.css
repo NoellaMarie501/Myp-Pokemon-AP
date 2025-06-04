@@ -1,18 +1,24 @@
-/* Add this CSS to your existing stylesheet or create a new one */
-.search-bar-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-  }
-  
-  .search-input {
-    padding: 10px;
-    margin-right: 10px;
-  }
-  
-  .search-button {
-    padding: 10px;
-    cursor: pointer;
-  }
-  
+.search-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem 1rem;
+}
+
+.search-input {
+  width: 90%;
+  max-width: 400px;
+  padding: 0.75rem 1.2rem;
+  font-size: 1rem;
+  border: 2px solid #84a7b7;
+  border-radius: 50px;
+  background-color: #f0f9ff;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.search-input:focus {
+  border-color: #b74555;
+  background-color: #ffffff;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(183, 69, 85, 0.2);
+}
